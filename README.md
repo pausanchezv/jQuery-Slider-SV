@@ -1,2 +1,3 @@
 # sv-slider
-# sv-slider
+
+jQuery slider for website
