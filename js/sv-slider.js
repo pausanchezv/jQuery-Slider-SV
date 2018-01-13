@@ -23,7 +23,7 @@
 		 */
 		function init (settings) {
 
-			return $.extend(true, {
+			var settings = $.extend(true, {
 
 	        	width: "100%",					// string
 	            randomFront: false,				// bool
@@ -67,6 +67,8 @@
 		        },
 		            
 	        }, settings);
+
+	        return settings;
 		        
 		}
 
@@ -684,3 +686,4 @@
 	};
 
 } (jQuery));
+
