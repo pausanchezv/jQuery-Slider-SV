@@ -1,10 +1,19 @@
-/*
- * Funció auto-executable sobreescrivint '$' per no interferir amb altres
- * llibreries de JavaScript, si n'hi hagués
- */
+/*****************************************
+ * SV-SLIDER
+ *****************************************
+ *
+ * Developed by: Pau Sanchez V.
+ * Official website: pausanchezv.com
+ * Github: github.com/pausanchezv
+ * Linkedin: linkedin.com/in/pausanchezv
+ * Twitter: twitter.com/pausanchezv
+ * Facebook: facebook.com/pausanchezv
+ *
+ ******************************************/
+
 (function($) {
 
-	// creació del plugin
+	// Initializing the plugin
 	$.fn.slider = function(settings) {
 
 		// constants
@@ -12,68 +21,82 @@
 		var BUTTONS_SIZE = 15;
 
 		// globals
-		var interval;						// interval jQuery object
+		var intervals = [];					// interval array
 		var browser = $(window);			// browser object
 		var slider = $(this);				// slider DOM object
 		var settings = init(settings);		// get custom setting
 		var inTransition = false;			// indicates if there is a transition
 
+		// Checks the customized types user's values
+		if (!checkValues()) {
+			return false;
+		}
+
+
 		/**
-		 * Inicialitza la configuració
+		 * Initializes the plugin configuration with user preferences
+		 * @param settings
 		 */
 		function init (settings) {
 
 			var settings = $.extend(true, {
 
-	        	width: "100%",					// string
-	            randomFront: false,				// bool
-	            timeEffect: 400,				// int
-	            animation: 'rotation',			// string :: options { rotation, translation, vibration, zoom }
-	            overflowHidden: true,			// bool
-	            borderSize: 1,					// int
-	            borderColor: "#999",			// string
-	            borderRadius: 0,				// int
-	            paddingSize: 6,					// int:: max 50
-	            paddingColor: "transparent",	// string
-	            buttonsHiddenEffect: false,		// bool
-	            boomerang: true,				// bool
-	            filter: "off",					// string :: options { white, black, green, blue, red, magenta, yellow, cyan, gray }
-	            showPager: true,				// boolean
-	            autoplay: true,					// boolean
-	            autoplayInterval: 6000,			// int
+				width: "100%",					// string :: px or %
+				randomFront: false,				// bool
+				timeEffect: 400,				// int :: milliseconds
+				animation: 'rotation',			// string :: options { rotation, translation, vibration, zoom }
+				overflowHidden: true,			// bool
+				borderSize: 1,					// int :: px
+				borderColor: "#999",			// string :: html, rgb, rgba or text color
+				borderRadius: 0,				// int :: px
+				paddingSize: 6,					// int:: max 50
+				paddingColor: "transparent",	// string :: html, rgb, rgba or text color
+				buttonsHiddenEffect: false,		// bool
+				boomerang: true,				// bool
+				filter: "off",					// string :: options { white, black, green, blue, red, magenta, yellow, cyan, gray }
+				showPager: true,				// boolean
+				autoplay: true,					// boolean
+				autoplayInterval: 6000,			// int :: milliseconds
+				shadowSize: 0,                  // int :: px
+				shadowColor: "#666",            // string :: html, rgb or rgba color
 
-	            caption: {
+				caption: {
 
-	            	animation: "slide",							// string :: options { slide, fade }
-	            	float: "left",								// string :: options { left, right }
-	            	position: "bottom",							// string :: options { top, bottom }
-		        	backgroundColor: "rgba(0, 5, 10, 0.6)",		// string
-		        	borderSize: 0,								// int
-		        	borderColor: "#FFF",						// string
-		        	borderRadius: 0,							// int
-		        	fontColor: "#FFF",							// string
-		        	fontSize: 25,								// int
-		        	fontBold: false,							// bool
-		        	fontItalic: false,							// bool
+					animation: "slide",							// string :: options { slide, fade }
+					float: "left",								// string :: options { left, right }
+					position: "bottom",							// string :: options { top, bottom }
+					backgroundColor: "rgba(0, 5, 10, 0.6)",		// string :: html, rgb, rgba or text color
+					borderSize: 0,								// int
+					borderColor: "#FFF",						// string :: html, rgb, rgba or text color
+					borderRadius: 0,							// int
+					fontColor: "#FFF",							// string :: html, rgb, rgba or text color
+					fontSize: 25,								// int
+					fontBold: false,							// bool
+					fontItalic: false,							// bool
+					shadowSize: 0,                  // int :: px
+					shadowColor: "#666",            // string :: html, rgb or rgba color
 
-		        },
+				},
 
-		        pager: {
-		        	dark: false,
-		        	transitionHidden: true,			// bool
-		        	float: "center",				// string:: options { left, right, center }
-		        	position: "bottom",				// string:: options { top, bottom }
-		        	background: "off"
-		        },
-		            
-	        }, settings);
+				pager: {
+					dark: false,
+					transitionHidden: true,			// bool
+					float: "center",				// string :: options { left, right, center }
+					position: "bottom",				// string :: options { top, bottom }
+					background: "off",              // string :: options { white, dark, off }
+				},
 
-	        return settings;
-		        
+			}, settings);
+
+			return settings;
+
 		}
 
+
 		/**
-		 * Obté les direccions d'animació
+		 * Gets the orientations of the animations
+		 * @param obj
+		 * @returns {{x: string, y: string}}
 		 */
 		var getDirections = function(obj) {
 
@@ -83,8 +106,11 @@
 			return {x: x, y: settings.boomerang ? y : x};
 		};
 
+
 		/**
-		 * S'actualitza el temps a l'efecte
+		 * Updates time of effects
+		 * @param str
+		 * @param time
 		 */
 		var addDurationEffects = function(str, time) {
 			if (str.toString().indexOf('vibration') === -1) {
@@ -93,8 +119,10 @@
 			}
 		};
 
+
 		/**
-		 * Manipula el css
+		 * Handles CSS of slider
+		 * @param obj
 		 */
 		var sliderHandler = function(obj) {
 
@@ -117,10 +145,17 @@
 			if (settings.paddingSize < 1) {
 				obj.css('background-color', "transparent");
 			}
+
+			if (settings.shadowSize > 0) {
+				obj.css('box-shadow', "0px 1px " + settings.shadowSize + "px " + parseInt(settings.shadowSize / 5) + "px " + settings.shadowColor);
+			}
 		};
 
+
 		/**
-		 * Manipula l'efecte dels botons
+		 * Handles the buttons effect
+		 * @param obj
+		 * @param gone
 		 */
 		var hiddenButtonsWhileTransition = function(obj, gone) {
 
@@ -133,8 +168,11 @@
 			}
 		};
 
+
 		/**
-		 * Manipula l'efecte dels botons
+		 * Handles the pager effect
+		 * @param obj
+		 * @param gone
 		 */
 		var hiddenPagerWhileTransition = function(obj, gone) {
 
@@ -147,8 +185,10 @@
 			}
 		};
 
+
 		/**
-		 * el número a les imatges segons el seu ordre
+		 * Add the image number according to it order
+		 * @param obj
 		 */
 		var addNumbersToImages = function(obj) {
 			obj.children('img').each(function(i, el) {
@@ -156,8 +196,12 @@
 			});
 		};
 
+
 		/**
-		 * Retorna una imatge del DOM segons el seu número
+		 * Returns a DOM image according to it order
+		 * @param obj
+		 * @param number
+		 * @returns {*|{}}
 		 */
 		var getImageDOM = function (obj, number) {
 			return obj.find("img[data-number='" + number + "']");
@@ -165,14 +209,15 @@
 
 
 		/**
-		 * Afegeix els botons a l'slider
+		 * Adds buttons to slider
+		 * @param obj
 		 */
 		var addButtons = function(obj) {
 
 			var html = '<div class="buttons">' +
-							'<a class="left" data-direction="left"><img src="/test/assets/img/slider/left.png" /></a>' +
-							'<a class="right" data-direction="right"><img src="/test/assets/img/slider/right.png" /></a>' +
-						'</div>';
+				'<a class="left" data-direction="left"><img src="/test/assets/img/slider/left.png" /></a>' +
+				'<a class="right" data-direction="right"><img src="/test/assets/img/slider/right.png" /></a>' +
+				'</div>';
 			$(html).insertAfter(obj.find("img:last-child")).fadeIn();
 
 			var height = obj.find("img").height();
@@ -181,15 +226,18 @@
 			obj.find(".buttons > a.right").css('right', settings.paddingSize + BUTTONS_SIZE + "px");
 		};
 
+
 		/**
-		 * Afegeix les captures de text
+		 * Adds captions to slider
+		 * @param obj
+		 * @param currentImage
 		 */
 		var addCaption = function(obj, currentImage) {
 
 			var html = '<div class="caption"></div>';
 			$(html).insertAfter(obj.find(".buttons"));
 
-			// afegeix el CSS personalitzat
+			// updates the customized CSS
 			obj.find('.caption').css({
 				"background-color": settings.caption.backgroundColor,
 				"padding": "20px",
@@ -213,22 +261,26 @@
 				obj.find('.caption').css("right", settings.paddingSize + CAPTION_MARGIN + "px");
 			}
 
-			// activa la primera caption
+			if (settings.caption.shadowSize > 0) {
+				obj.find('.caption').css('box-shadow', "0px 1px " + settings.shadowSize + "px " + parseInt(settings.shadowSize / 5) + "px " + settings.shadowColor);
+			}
+
+			// adds the first caption
 			changeCaption(slider, currentImage);
 		};
 
-		/**
-		 * Canvia el text de les captures
-		 */
-		var changeCaption = function(obj, number, direction) {
 
-			// si no arriba direcció, s'asigna a l'esquerra per defecte
-			direction = direction === undefined ? "left" : direction;
+		/**
+		 * Change the captions of the images
+		 * @param obj
+		 * @param number
+		 */
+		var changeCaption = function(obj, number) {
 
 			var text = getImageDOM(obj, number).data('caption');
 			var caption = obj.find('.caption');
 
-			// només s'esenya la caption si l'usuari hi ha afegit text
+			// just shows the caption if user has added text to it
 			if (text !== undefined && text !== "") {
 
 				if (settings.caption.animation === "fade") {
@@ -236,13 +288,13 @@
 					caption.fadeIn();
 
 				} else if (settings.caption.animation === "slide") {
-					
+
 					if (settings.caption.float === 'left') {
-						caption.show().animate({'left': (CAPTION_MARGIN + settings.paddingSize).toString() + 'px'}, settings.timeEffect);
+						caption.show().animate({'left': (CAPTION_MARGIN + settings.paddingSize).toString() + 'px'}, settings.timeEffect, 'swing');
 
 					} else {
-						caption.show().animate({'right': (CAPTION_MARGIN + settings.paddingSize).toString() + 'px'}, settings.timeEffect);
-	
+						caption.show().animate({'right': (CAPTION_MARGIN + settings.paddingSize).toString() + 'px'}, settings.timeEffect, 'swing');
+
 					}
 				}
 
@@ -253,52 +305,57 @@
 			}
 		};
 
+
 		/**
-		 * Canvia el text de les captures
+		 * Remove images captions
+		 * @param obj
+		 * @param number
+		 * @param direction
 		 */
 		var removeCaption = function(obj, number, direction) {
 
-			// si no arriba direcció, s'asigna a l'esquerra per defecte
+			// if there is no direction parameter, it's assigned to the left by default
 			direction = direction === undefined ? "left" : direction;
 
 			var caption = obj.find('.caption');
 
-			// si l'efecte és 'fade' només cal amagar la caption
+			// if the effect is 'fade', then just hide the caption
 			if (settings.caption.animation === "fade") {
 				caption.fadeOut();
 
-			// si l'efecte és 'slide' es dóna animació a la caption
+				// if the effect is 'slide', then animate the caption
 			} else if (settings.caption.animation === "slide") {
 
 				// el recorregut és l'amplada de tot l'slider menys l'amplada de la caption
+				// distance is slider-width without caption-width and double padding-size + double caption-margin
 				var distance = obj.width() - caption.width() - (settings.paddingSize * 2 + CAPTION_MARGIN * 2);
 
-				// es té en compte la posició de la caption
+				// checks the caption position
 				if (settings.caption.float === 'left') {
-					
-					// es té en compte la direcció d'animació
+
+					// checks the animation direction
 					if (direction == 'left') {
-						caption.animate({'left': -distance  + 'px'}, settings.timeEffect, function() {
+						caption.animate({'left': -distance  + 'px'}, settings.timeEffect, 'swing', function() {
 							caption.css('left', distance + 'px');
 						});
 					}
 					else {
-						caption.animate({'left': distance + 'px'}, settings.timeEffect, function() {
+						caption.animate({'left': distance + 'px'}, settings.timeEffect, 'swing', function() {
 							caption.css('left', -distance + 'px');
 						});
 					}
 
-				// es té en compte la posició de la caption
+					// checks the caption position
 				} else {
-					
-					// es té en compte la direcció d'animació
+
+					// checks the animation direction
 					if (direction == 'left') {
-						caption.animate({'right': distance + 'px'}, settings.timeEffect, function() {
+						caption.animate({'right': distance + 'px'}, settings.timeEffect, 'swing', function() {
 							caption.css('right', -distance + 'px');
 						});
 					}
 					else {
-						caption.animate({'right': -distance + 'px'}, settings.timeEffect, function() {
+						caption.animate({'right': -distance + 'px'}, settings.timeEffect, 'swing', function() {
 							caption.css('right', distance + 'px');
 						});
 					}
@@ -306,8 +363,10 @@
 			}
 		};
 
+
 		/**
-		 * Afegeix unfiltre
+		 * Adds a filter to the slider
+		 * @param obj
 		 */
 		var addFilter = function(obj) {
 
@@ -326,8 +385,11 @@
 
 		};
 
+
 		/**
-		 * Retorna un filtre segons la clau
+		 * Gets the filter by key
+		 * @param key
+		 * @returns {*}
 		 */
 		var getFilter = function(key) {
 
@@ -344,40 +406,41 @@
 			};
 
 			return filters[key];
-
 		};
 
+
 		/**
-		 * Afegeix el paginador
+		 * Adds a pager to slider
+		 * @param obj
+		 * @param numImages
 		 */
 		var addPager =  function(obj, numImages) {
 
 			var html = '<div class="pager"></div>';
-			
-			// s'insereix l'html
+
+			// inserts the html
 			$(html).insertAfter(obj.find('.filter'));
 			var pager = obj.find('.pager');
 
-			// s'adjunten les dades al div
+			// adds data to div
 			for (var i = 0; i < numImages; i++) {
-				var direction = (i + 1) < numImages / 2 ? 'left' : 'right';
 				pager.append('<div data-number="' + (i + 1) + '"></div>');
 			}
 
 			var left;
 
-			// horitzontal del paginador
+			// pager horizontal align
 			if (settings.pager.float === 'center') left = (obj.width() / 2 - (pager.width() / 2)) + settings.paddingSize;
 			else if (settings.pager.float === 'left') left = settings.paddingSize + CAPTION_MARGIN;
 			else if (settings.pager.float === 'right') left = obj.width() - pager.width() + settings.paddingSize - CAPTION_MARGIN;
 
-			// css bàsic del paginador
+			// pager CSS
 			pager.css({
 				'width': 'auto',
 				'left': left + 'px'
 			});
 
-			// posició del paginador
+			// pager vertical align
 			if (settings.pager.position === 'top') {
 				pager.css('top', 20 + settings.paddingSize + "px");
 
@@ -385,15 +448,15 @@
 				pager.css('bottom', 20 + settings.paddingSize + "px");
 			}
 
-			// es treu el marge a l'últim fill
+			// removes the margin of the last child
 			pager.find('div:last-child').css('margin', 0);
 
-			// es té en compte el color del paginador
+			// checks the pager color
 			if (settings.pager.dark) {
 				pager.addClass('dark');
 			}
 
-			// es té en compte si hi ha fons i el seu color
+			// checks if pager has background or not
 			if (settings.pager.background !== 'off') {
 				pager.addClass('bg');
 
@@ -407,16 +470,21 @@
 			}
 		};
 
+
 		/**
-		 * Selecciona la imatge del paginador
+		 * Selects an item from the pager
+		 * @param obj
+		 * @param number
 		 */
 		var addPagerSelected = function(obj, number) {
-			obj.find('div').removeClass('selected'),
+			obj.find('div').removeClass('selected');
 			obj.find("div[data-number='" + number + "']").addClass('selected');
 		};
 
+
 		/**
-		 * Afegeix l'html per l'interval
+		 * Adds interval html bar
+		 * @param obj
 		 */
 		var addInterval = function(obj) {
 
@@ -426,24 +494,33 @@
 			}
 		};
 
+
+		/**
+		 * Adds animation to interval bar
+		 * @param obj
+		 */
 		var addIntervalAnimation = function(obj) {
 			if (settings.autoplay) {
 				obj.find('.interval-bar').css('width', '0').show().stop(true).animate({'width': obj.width() + 'px'}, settings.autoplayInterval, 'swing');
 			}
 		};
 
+
 		/**
-		 * Acciona la reproducció automàtica
+		 * Starts the automatic play
+		 * @param obj
 		 */
 		var startInterval = function(obj) {
 
 			if (settings.autoplay) {
-				interval = setInterval(intervalHandler, settings.autoplayInterval, obj);
+				intervals.push(setInterval(intervalHandler, settings.autoplayInterval, obj));
 			}
 		};
 
+
 		/**
-		 * Assigna esdeveniment a l'interval de reproducció automàtica
+		 * Assigns the event to the automatic play
+		 * @param obj
 		 */
 		var intervalHandler = function(obj) {
 
@@ -452,125 +529,126 @@
 			}
 		};
 
+
 		/**
-		 * Atura la reproducció automàtica
+		 * Stops the automatic reproduction
+		 * @param obj
 		 */
 		var stopInterval = function(obj) {
 
 			if (settings.autoplay) {
-				clearInterval(interval);
+
 				obj.find('.interval-bar').hide();
+
+				// removes all previous intervals
+				intervals.forEach(clearInterval);
+				intervals = [];
 			}
 		};
 
+
 		/**
-		 * Manipulador de pestanyes
+		 * Tabs handler
+		 * @param obj
 		 */
 		var tabHandler = function(obj) {
 
 			browser.focus(function() {
-			    startInterval(obj);
-			    addIntervalAnimation(obj);
+				startInterval(obj);
+				addIntervalAnimation(obj);
 			});
 
 			browser.blur(function() {
-			    stopInterval(obj);
+				stopInterval(obj);
 			});
 		};
 
+
 		/**
-		 * Accions abans de la transició
+		 * Actions before transition
+		 * @param obj
 		 */
 		var addActionsBeforeTransition = function(obj) {
 
 			inTransition = true;
 
-			// s'amaguen els botons si escau
 			hiddenButtonsWhileTransition(obj, true);
 			hiddenPagerWhileTransition(obj, true);
 
-			// manipula la reproducció automàtica
 			stopInterval(obj);
 		};
 
+
 		/**
-		 * Accions després de la transició
+		 * Actions after transition
+		 * @param obj
 		 */
 		var restartActionsAfterTransition = function(obj) {
 
 			inTransition = false;
 
-			// es mostren els botons si estaven amagats
-			hiddenButtonsWhileTransition(obj, false)
+			hiddenButtonsWhileTransition(obj, false);
 			hiddenPagerWhileTransition(obj, false);
 
-			// manipula la reproducció automàtica
 			startInterval(obj);
 			addIntervalAnimation(obj);
 		};
 
 
-		/*************** Slider ****************/
+		// tabs handler
+		tabHandler(slider);
 
-		
-		// es comproven els tipus
-		checkValues();
+		// css handler
+		sliderHandler(slider);
 
-        // manipulador de pestanyes
-        tabHandler(slider);
-
-        // manipula el css de l'slider
-        sliderHandler(slider);
-
-        // s'afegeix el número a les imatges segons el seu ordre
+		// adds the numbers to images according its position
 		addNumbersToImages(slider);
 
-		// es detecta el nombre d'imatges i es selecciona una imatge a l'atzar per començar
+		// checks the number of images and select the first it
 		var numSliderImages = slider.find("img").length;
 		var currentImage = settings.randomFront ? (Math.floor(Math.random() * numSliderImages) + 1) : 1;
 
-		// afegeix els botons a l'slider (després de comptar les imatges!)
+		// adds the buttons to slider
 		addButtons(slider);
 
-		// s'afegeix la captura
+		// adds the caption
 		addCaption(slider, currentImage);
 
-		// classe d'animació genèrica
+		// animate generic class
 		var animateClass = 'animate-slider-' + settings.animation + '-';
 
-		// es mostra la primera imatge
+		// shows the first image
 		getImageDOM(slider, currentImage).css('display', 'block');
 
-		// Afegeix un filtre si cal
+		// adds filter
 		addFilter(slider);
 
-		// afegeix el paginador
+		// adds pager
 		addPager(slider, numSliderImages);
 		addPagerSelected(slider, currentImage);
 
-		// manipula la reproducció automàtica
+		// handles the automatic reproduction
 		addInterval(slider);
 		startInterval(slider);
 		addIntervalAnimation(slider);
 
-		// s'assignen les funcions del 'click' als botons
+		// add click events
 		slider.find(".buttons > a, .pager > div").click(function() {
 
-			// es compova de quina entitat prové el click
+			// check which entity has clicked
 			var tagName = $(this).prop("tagName");
 			var fromButton = tagName === 'A';
 			var fromPager = tagName === 'DIV';
 
-			// es crea un objecte de paginador
+			// creates a pager object
 			var pagerItem = fromPager ? $(this) : null;
 
-			// si els botons estan actius
+			// checks if there is a transition or not
 			if (!inTransition) {
 
-				// accions abans de la transició
 				addActionsBeforeTransition(slider);
 
-				// si s'arriba del paginador cal mirar en quina direcció anar
+				// adds pager animation direction
 				if (fromPager && pagerItem) {
 
 					if (pagerItem.data('number') > currentImage) {
@@ -581,63 +659,62 @@
 
 					} else {
 
-						// accions després de la transició
 						restartActionsAfterTransition(slider);
 
 						return false;
 					}
 				}
 
-				// obté les direccions d'animació
+				// gets the animation directions
 				var directions = getDirections(this);
 
-				// s'anima la imatge actual
+				// animates the current image
 				getImageDOM(slider, currentImage).addClass(animateClass + directions.x);
 				addDurationEffects(animateClass, settings.timeEffect);
 
-				//es canvia la caption
+				// removes the image caption
 				removeCaption(slider, currentImage, directions.y);
-				
-				// timeout d'animació de la imatge actual
+
+				// animation timeout of current image
 				setTimeout(function() {
 
-					// s'atura l'animació de la imatge actual i s'amaga la imatge
+					// stops the animation of the current image and hide it
 					getImageDOM(slider, currentImage).removeClass(animateClass + directions.x).css('display', 'none');
 
-					// es calcula la propera imatge segons l'actual
+					// computes the next image depending which is the current it
 					if (fromButton) {
 						currentImage = directions.x === 'right' ? (++currentImage > numSliderImages ? 1 : currentImage) : (--currentImage < 1 ? numSliderImages : currentImage);
 					} else if (fromPager && pagerItem) {
 						currentImage = pagerItem.data('number');
 					}
 
-					// se selecciona l'ítem corresponent
+					// selects pager's item
 					addPagerSelected(slider, currentImage);
 
-					// s'anima la imatge següent
+					// animates the current image
 					getImageDOM(slider, currentImage).css('display', 'block').addClass(animateClass + directions.y);
 					addDurationEffects(animateClass, settings.timeEffect);
 
-					//es canvia la caption
-					changeCaption(slider, currentImage, directions.y);
+					// prepare the next caption
+					changeCaption(slider, currentImage);
 
-					// timeout de rotació de la segona imatge
+					// next animation timeout
 					setTimeout(function() {
 
-						// s'atura l'animació de la segona imatge
+						// stops the animation
 						getImageDOM(slider, currentImage).removeClass(animateClass + directions.y);
-
-						// accions després de la transició
 						restartActionsAfterTransition(slider);
 
 					}, settings.timeEffect);
-					
+
 				}, settings.timeEffect);
 			}
 		});
 
+
 		/**
-		 * Es comprova que els tipus dels valors entrats siguin correctes
+		 * Checks the customized types user's values
+		 * @returns {boolean}
 		 */
 		function checkValues() {
 
@@ -659,6 +736,8 @@
 				if (typeof settings.showPager !== "boolean") throw "'showPager' must be a boolean!";
 				if (typeof settings.autoplay !== "boolean") throw "'autoplay' must be a boolean!";
 				if (typeof settings.autoplayInterval !== "number") throw "'autoplayInterval' must be an integer!";
+				if (typeof settings.shadowSize !== "number") throw "'shadowSize' must be an integer!";
+				if (typeof settings.shadowColor !== "string") throw "'shadowColor' must be a string!";
 
 				if (typeof settings.caption.animation !== "string") throw "'caption.animation' must be a string!";
 				if (typeof settings.caption.position !== "string") throw "'caption.position' must be a string!";
@@ -671,6 +750,8 @@
 				if (typeof settings.caption.fontSize !== "number") throw "'caption.fontSize' must be an integer!";
 				if (typeof settings.caption.fontBold !== "boolean") throw "'caption.fontBold' must be a boolean!";
 				if (typeof settings.caption.fontItalic !== "boolean") throw "'caption.fontItalic' must be a boolean!";
+				if (typeof settings.caption.shadowSize !== "number") throw "'caption.shadowSize' must be an integer!";
+				if (typeof settings.caption.shadowColor !== "string") throw "'caption.shadowColor' must be a string!";
 
 				if (typeof settings.pager.dark !== "boolean") throw "'pager.dark' must be a boolean!";
 				if (typeof settings.pager.transitionHidden !== "boolean") throw "'pager.transitionHidden' must be a boolean!";
@@ -678,12 +759,14 @@
 				if (typeof settings.pager.position !== "string") throw "'pager.position' must be a string!";
 				if (typeof settings.pager.background !== "string") throw "'pager.background' must be a string!";
 
-
 			} catch (error) {
+
 				alert ("SV-Slider Error:: " + error);
+				return false;
 			}
+
+			return true;
 		}
 	};
 
 } (jQuery));
-
