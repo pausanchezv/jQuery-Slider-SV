@@ -46,7 +46,7 @@
 
 				width: "100%",					// string :: px or %
 				randomFront: false,				// bool
-				timeEffect: 400,				// int :: milliseconds
+				timeEffect: 300,				// int :: milliseconds
 				animation: 'rotation',			// string :: options { rotation, translation, vibration, zoom }
 				overflowHidden: true,			// bool
 				borderSize: 1,					// int :: px
@@ -84,8 +84,8 @@
 				pager: {
 					dark: false,
 					transitionHidden: true,			// bool
-					float: "center",				// string :: options { left, right, center }
-					position: "top",				// string :: options { top, bottom }
+					float: "right",				// string :: options { left, right, center }
+					position: "bottom",				// string :: options { top, bottom }
 					background: "off",              // string :: options { white, dark, off }
 				},
 
@@ -218,13 +218,13 @@
 		var addButtons = function(obj) {
 
 			var html = '<div class="buttons">' +
-				'<a class="left" data-direction="left"><img src="/test/assets/img/slider/left.png" /></a>' +
-				'<a class="right" data-direction="right"><img src="/test/assets/img/slider/right.png" /></a>' +
+				'<a class="left" data-direction="left"><img src="//www.pausanchezv.com/plugins/sv-slider/img/left.png" /></a>' +
+				'<a class="right" data-direction="right"><img src="//www.pausanchezv.com/plugins/sv-slider/img/right.png" /></a>' +
 				'</div>';
 			$(html).insertAfter(obj.find("img:last-child")).fadeIn();
 
-			var height = obj.find("img").height();
-			obj.find(".buttons > a").css('bottom', height / 2 - BUTTONS_SIZE + "px"); // 7.5 és la meitat de la mida de la fletxa
+			var height = obj.find("img:first-child").height();
+			obj.find(".buttons > a").css('bottom', height / 2 - BUTTONS_SIZE + "px");
 			obj.find(".buttons > a.left").css('left', settings.paddingSize + BUTTONS_SIZE + "px");
 			obj.find(".buttons > a.right").css('right', settings.paddingSize + BUTTONS_SIZE + "px");
 		};
@@ -329,7 +329,6 @@
 				// if the effect is 'slide', then animate the caption
 			} else if (settings.caption.animation === "slide") {
 
-				// el recorregut és l'amplada de tot l'slider menys l'amplada de la caption
 				// distance is slider-width without caption-width and double padding-size + double caption-margin
 				var distance = obj.width() - caption.width() - (settings.paddingSize * 2 + CAPTION_MARGIN * 2);
 
@@ -611,108 +610,113 @@
 		var numSliderImages = slider.find("img").length;
 		var currentImage = settings.randomFront ? (Math.floor(Math.random() * numSliderImages) + 1) : 1;
 
-		// adds the caption
-		addCaption(slider, currentImage);
-
 		// animate generic class
 		var animateClass = 'animate-slider-' + settings.animation + '-';
 
 		// shows the first image
 		getImageDOM(slider, currentImage).css('display', 'block');
 
-		// adds filter
-		addFilter(slider);
+		// actions after 500 milliseconds
+		setTimeout(function() {
 
-		// adds pager
-		addPager(slider, numSliderImages);
-		addPagerSelected(slider, currentImage);
+			// adds the buttons to slider
+			addButtons(slider);
 
-		// handles the automatic reproduction
-		addInterval(slider);
-		startInterval(slider);
-		addIntervalAnimation(slider);
+			// adds the caption
+			addCaption(slider, currentImage);
 
-		// adds the buttons to slider
-		addButtons(slider);
+			// adds filter
+			addFilter(slider);
 
-		// add click events
-		slider.find(".buttons > a, .pager > div").click(function() {
+			// adds pager
+			addPager(slider, numSliderImages);
+			addPagerSelected(slider, currentImage);
 
-			// check which entity has clicked
-			var tagName = $(this).prop("tagName");
-			var fromButton = tagName === 'A';
-			var fromPager = tagName === 'DIV';
+			// handles the automatic reproduction
+			addInterval(slider);
+			startInterval(slider);
+			addIntervalAnimation(slider);
 
-			// creates a pager object
-			var pagerItem = fromPager ? $(this) : null;
+			// add click events
+			slider.find(".buttons > a, .pager > div").click(function() {
 
-			// checks if there is a transition or not
-			if (!inTransition) {
+				// check which entity has clicked
+				var tagName = $(this).prop("tagName");
+				var fromButton = tagName === 'A';
+				var fromPager = tagName === 'DIV';
 
-				addActionsBeforeTransition(slider);
+				// creates a pager object
+				var pagerItem = fromPager ? $(this) : null;
 
-				// adds pager animation direction
-				if (fromPager && pagerItem) {
+				// checks if there is a transition or not
+				if (!inTransition) {
 
-					if (pagerItem.data('number') > currentImage) {
-						pagerItem.data('direction', 'right');
+					addActionsBeforeTransition(slider);
 
-					} else if (pagerItem.data('number') < currentImage){
-						pagerItem.data('direction', 'left');
+					// adds pager animation direction
+					if (fromPager && pagerItem) {
 
-					} else {
+						if (pagerItem.data('number') > currentImage) {
+							pagerItem.data('direction', 'right');
 
-						restartActionsAfterTransition(slider);
+						} else if (pagerItem.data('number') < currentImage){
+							pagerItem.data('direction', 'left');
 
-						return false;
-					}
-				}
+						} else {
 
-				// gets the animation directions
-				var directions = getDirections(this);
+							restartActionsAfterTransition(slider);
 
-				// animates the current image
-				getImageDOM(slider, currentImage).addClass(animateClass + directions.x);
-				addDurationEffects(animateClass, settings.timeEffect);
-
-				// removes the image caption
-				removeCaption(slider, currentImage, directions.y);
-
-				// animation timeout of current image
-				setTimeout(function() {
-
-					// stops the animation of the current image and hide it
-					getImageDOM(slider, currentImage).removeClass(animateClass + directions.x).css('display', 'none');
-
-					// computes the next image depending which is the current it
-					if (fromButton) {
-						currentImage = directions.x === 'right' ? (++currentImage > numSliderImages ? 1 : currentImage) : (--currentImage < 1 ? numSliderImages : currentImage);
-					} else if (fromPager && pagerItem) {
-						currentImage = pagerItem.data('number');
+							return false;
+						}
 					}
 
-					// selects pager's item
-					addPagerSelected(slider, currentImage);
+					// gets the animation directions
+					var directions = getDirections(this);
 
 					// animates the current image
-					getImageDOM(slider, currentImage).css('display', 'block').addClass(animateClass + directions.y);
+					getImageDOM(slider, currentImage).addClass(animateClass + directions.x);
 					addDurationEffects(animateClass, settings.timeEffect);
 
-					// prepare the next caption
-					changeCaption(slider, currentImage);
+					// removes the image caption
+					removeCaption(slider, currentImage, directions.y);
 
-					// next animation timeout
+					// animation timeout of current image
 					setTimeout(function() {
 
-						// stops the animation
-						getImageDOM(slider, currentImage).removeClass(animateClass + directions.y);
-						restartActionsAfterTransition(slider);
+						// stops the animation of the current image and hide it
+						getImageDOM(slider, currentImage).removeClass(animateClass + directions.x).css('display', 'none');
+
+						// computes the next image depending which is the current it
+						if (fromButton) {
+							currentImage = directions.x === 'right' ? (++currentImage > numSliderImages ? 1 : currentImage) : (--currentImage < 1 ? numSliderImages : currentImage);
+						} else if (fromPager && pagerItem) {
+							currentImage = pagerItem.data('number');
+						}
+
+						// selects pager's item
+						addPagerSelected(slider, currentImage);
+
+						// animates the current image
+						getImageDOM(slider, currentImage).css('display', 'block').addClass(animateClass + directions.y);
+						addDurationEffects(animateClass, settings.timeEffect);
+
+						// prepare the next caption
+						changeCaption(slider, currentImage);
+
+						// next animation timeout
+						setTimeout(function() {
+
+							// stops the animation
+							getImageDOM(slider, currentImage).removeClass(animateClass + directions.y);
+							restartActionsAfterTransition(slider);
+
+						}, settings.timeEffect);
 
 					}, settings.timeEffect);
+				}
+			});
 
-				}, settings.timeEffect);
-			}
-		});
+		}, 500);
 
 
 		/**
