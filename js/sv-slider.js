@@ -611,9 +611,6 @@
 		var numSliderImages = slider.find("img").length;
 		var currentImage = settings.randomFront ? (Math.floor(Math.random() * numSliderImages) + 1) : 1;
 
-		// adds the buttons to slider
-		addButtons(slider);
-
 		// adds the caption
 		addCaption(slider, currentImage);
 
@@ -634,6 +631,9 @@
 		addInterval(slider);
 		startInterval(slider);
 		addIntervalAnimation(slider);
+
+		// adds the buttons to slider
+		addButtons(slider);
 
 		// add click events
 		slider.find(".buttons > a, .pager > div").click(function() {
