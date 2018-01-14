@@ -1,5 +1,5 @@
 /*********************************************
- * SV-SLIDER (jQuery/CSS slider for website)
+ * SV-SLIDER (jQuery/CSS slider)
  *********************************************
  *
  * Developed by: Pau Sanchez V.
