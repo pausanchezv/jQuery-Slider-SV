@@ -53,8 +53,8 @@
 				borderColor: "#999",			// string :: html, rgb, rgba or text color
 				borderRadius: 0,				// int :: px
 				paddingSize: 6,					// int:: max 50
-				paddingColor: "transparent",	// string :: html, rgb, rgba or text color
-				buttonsHiddenEffect: false,		// bool
+				paddingColor: "#EEE",			// string :: html, rgb, rgba or text color
+				buttonsHiddenEffect: true,		// bool
 				boomerang: true,				// bool
 				filter: "off",					// string :: options { white, black, green, blue, red, magenta, yellow, cyan, gray }
 				showPager: true,				// boolean
@@ -76,8 +76,8 @@
 					fontSize: 25,								// int
 					fontBold: false,							// bool
 					fontItalic: false,							// bool
-					shadowSize: 0,                  // int :: px
-					shadowColor: "#666",            // string :: html, rgb or rgba color
+					shadowSize: 0,                  			// int :: px
+					shadowColor: "#666",            			// string :: html, rgb or rgba color
 
 				},
 
