@@ -67,7 +67,7 @@
 
 					animation: "slide",							// string :: options { slide, fade }
 					float: "left",								// string :: options { left, right }
-					position: "bottom",							// string :: options { top, bottom }
+					position: "top",							// string :: options { top, bottom }
 					backgroundColor: "rgba(0, 5, 10, 0.6)",		// string :: html, rgb, rgba or text color
 					borderSize: 0,								// int
 					borderColor: "#FFF",						// string :: html, rgb, rgba or text color

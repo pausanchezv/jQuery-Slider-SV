@@ -15,6 +15,7 @@
  **********************************************/
 
 .sv-slider {
+    font-family: Arial, Helvetica, sans-serif;
 	min-width: 380px;
 	position: relative;
 	overflow: hidden;
