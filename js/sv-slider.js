@@ -1,15 +1,18 @@
-/*****************************************
- * SV-SLIDER
- *****************************************
+/*********************************************
+ * SV-SLIDER (jQuery/CSS slider for website)
+ *********************************************
  *
  * Developed by: Pau Sanchez V.
- * Official website: pausanchezv.com
- * Github: github.com/pausanchezv
- * Linkedin: linkedin.com/in/pausanchezv
- * Twitter: twitter.com/pausanchezv
- * Facebook: facebook.com/pausanchezv
  *
- ******************************************/
+ * website:     pausanchezv.com
+ * Github:      github.com/pausanchezv
+ * Linkedin:    linkedin.com/in/pausanchezv
+ * Twitter:     twitter.com/pausanchezv
+ * Facebook:    facebook.com/pausanchezv
+ *
+ * All rights reserved. - Barcelona 2018 -
+ *
+ **********************************************/
 
 (function($) {
 
