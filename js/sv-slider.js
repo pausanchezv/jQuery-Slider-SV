@@ -27,11 +27,11 @@
 		var CAPTION_MARGIN = 15;
 
 		// globals
-		var browser = $(window);			// browser object
-		var slider = $(this);				// slider DOM object
-		var settings = init(settings);		// get custom setting
-		var inTransition = false;			// indicates if there is a transition
-		var inPage = true;                  // indicates if it has left the page
+		var browser = $(window);		// browser object
+		var slider = $(this);			// slider DOM object
+		var settings = init(settings);	// get custom setting
+		var inTransition = false;		// indicates if there is a transition
+		var inPage = true;				// indicates if it has left the page
 
 
 		// Checks the customized types user's values
