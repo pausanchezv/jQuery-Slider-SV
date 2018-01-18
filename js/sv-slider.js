@@ -27,11 +27,11 @@
 		var CAPTION_MARGIN = 15;
 
 		// globals
-		var browser = $(window);		// browser object
-		var slider = $(this);			// slider DOM object
-		var settings = init(settings);	// get custom setting
-		var inTransition = false;		// indicates if there is a transition
-		var inPage = true;				// indicates if it has left the page
+		var browser = $(window); // browser object
+		var slider = $(this); // slider DOM object
+		var settings = init(settings); // get custom setting
+		var inTransition = false; // indicates if there is a transition
+		var inPage = true; // indicates if it has left the page
 
 
 		// Checks the customized types user's values
@@ -49,60 +49,60 @@
 
 			var settings = $.extend(true, {
 
-				width: "100%",					// string :: px or %
-				randomFront: false,				// bool
-				timeEffect: 300,				// int :: milliseconds
-				animation: 'rotation',			// string :: options { rotation, translation, vibration, zoom }
-				overflowHidden: true,			// bool
-				borderSize: 1,					// int :: px
-				borderColor: "#999",			// string :: html, rgb, rgba or text color
-				borderRadius: 0,				// int :: px
-				paddingSize: 6,					// int:: max 50
-				paddingColor: "#EEE",			// string :: html, rgb, rgba or text color
-				boomerang: true,				// bool
-				filter: "off",					// string :: options { white, black, green, blue, red, magenta, yellow, cyan, gray }
-				showPager: true,				// boolean
-				autoplay: true,					// boolean
-				autoplayInterval: 6000,			// int :: milliseconds
-				shadowSize: 0,                  // int :: px
-				shadowColor: "#666",            // string :: html, rgb or rgba color
+				width: "100%", // string :: px or %
+				randomFront: false, // bool
+				timeEffect: 300, // int :: milliseconds
+				animation: 'rotation', // string :: options { rotation, translation, vibration, zoom }
+				overflowHidden: true, // bool
+				borderSize: 1, // int :: px
+				borderColor: "#999", // string :: html, rgb, rgba or text color
+				borderRadius: 0, // int :: px
+				paddingSize: 6, // int:: max 50
+				paddingColor: "#EEE", // string :: html, rgb, rgba or text color
+				boomerang: true, // bool
+				filter: "off", // string :: options { white, black, green, blue, red, magenta, yellow, cyan, gray }
+				showPager: true, // boolean
+				autoplay: true, // boolean
+				autoplayInterval: 6000, // int :: milliseconds
+				shadowSize: 0, // int :: px
+				shadowColor: "#666", // string :: html, rgb or rgba color
 
 				buttons: {
-					type: "big",                // string :: options  {small, big }
-					hiddenEffect: true,		    // bool
-					borderRadius: 2,            // int
-					position: "center",         // string :: options { top, bottom, center }
-					dark: false                 // bool
+					type: "big", // string :: options  {small, big }
+					hiddenEffect: true, // bool
+					borderRadius: 2, // int
+					position: "center", // string :: options { top, bottom, center }
+					dark: false // bool
 				},
 
 				caption: {
 
-					animation: "slide",							// string :: options { slide, fade }
-					float: "left",								// string :: options { left, right }
-					position: "bottom",							// string :: options { top, bottom }
-					backgroundColor: "rgba(0, 5, 10, 0.6)",		// string :: html, rgb, rgba or text color
-					borderSize: 0,								// int
-					borderColor: "#FFF",						// string :: html, rgb, rgba or text color
-					borderRadius: 0,							// int
-					fontColor: "#FFF",							// string :: html, rgb, rgba or text color
-					fontSize: 25,								// int
-					fontBold: false,							// bool
-					fontItalic: false,							// bool
-					shadowSize: 0,                  			// int :: px
-					shadowColor: "#666"             			// string :: html, rgb or rgba color
+					animation: "slide", // string :: options { slide, fade }
+					float: "left", // string :: options { left, right }
+					position: "bottom", // string :: options { top, bottom }
+					backgroundColor: "rgba(0, 5, 10, 0.6)", // string :: html, rgb, rgba or text color
+					borderSize: 0, // int
+					borderColor: "#FFF", // string :: html, rgb, rgba or text color
+					borderRadius: 0, // int
+					fontColor: "#FFF", // string :: html, rgb, rgba or text color
+					fontSize: 25, // int
+					fontBold: false, // bool
+					fontItalic: false, // bool
+					shadowSize: 0, // int :: px
+					shadowColor: "#666" // string :: html, rgb or rgba color
 
 				},
 
 				pager: {
-					dark: false,
-					transitionHidden: true,			// bool
-					float: "right",				    // string :: options { left, right, center }
-					position: "bottom",				// string :: options { top, bottom }
-					background: "off"               // string :: options { white, dark, off }
+					dark: false, // bool
+					transitionHidden: true, // bool
+					float: "right", // string :: options { left, right, center }
+					position: "bottom", // string :: options { top, bottom }
+					background: "off" // string :: options { white, dark, off }
 				},
 
 				timer: {
-					intervals: []
+					intervals: [] // private!
 				}
 
 
