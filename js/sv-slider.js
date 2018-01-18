@@ -21,7 +21,7 @@
 	 *
 	 * @param settings
 	 */
-	$.fn.startVal = function(settings) {
+	$.fn.SVSlider = function(settings) {
 
 		// constants
 		var CAPTION_MARGIN = 15;
