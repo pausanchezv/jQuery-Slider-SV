@@ -3,7 +3,7 @@
  *********************************************
  *
  * Developed by: Pau Sanchez V.
- * 
+ *
  * website:     pausanchezv.com
  * Github:      github.com/pausanchezv
  * Linkedin:    linkedin.com/in/pausanchezv
@@ -16,19 +16,23 @@
 
 (function($) {
 
-	// Initializing the plugin
-	$.fn.slider = function(settings) {
+	/**
+	 * startVal Constructor
+	 *
+	 * @param settings
+	 */
+	$.fn.startVal = function(settings) {
 
 		// constants
 		var CAPTION_MARGIN = 15;
-		var BUTTONS_SIZE = 15;
 
 		// globals
-		var intervals = [];					// interval array
 		var browser = $(window);			// browser object
 		var slider = $(this);				// slider DOM object
 		var settings = init(settings);		// get custom setting
 		var inTransition = false;			// indicates if there is a transition
+		var inPage = true;                  // indicates if it has left the page
+
 
 		// Checks the customized types user's values
 		if (!checkValues()) {
@@ -38,9 +42,10 @@
 
 		/**
 		 * Initializes the plugin configuration with user preferences
+		 *
 		 * @param settings
 		 */
-		function init (settings) {
+		function init(settings) {
 
 			var settings = $.extend(true, {
 
@@ -54,7 +59,6 @@
 				borderRadius: 0,				// int :: px
 				paddingSize: 6,					// int:: max 50
 				paddingColor: "#EEE",			// string :: html, rgb, rgba or text color
-				buttonsHiddenEffect: true,		// bool
 				boomerang: true,				// bool
 				filter: "off",					// string :: options { white, black, green, blue, red, magenta, yellow, cyan, gray }
 				showPager: true,				// boolean
@@ -62,6 +66,14 @@
 				autoplayInterval: 6000,			// int :: milliseconds
 				shadowSize: 0,                  // int :: px
 				shadowColor: "#666",            // string :: html, rgb or rgba color
+
+				buttons: {
+					type: "big",                // string :: options  {small, big }
+					hiddenEffect: true,		    // bool
+					borderRadius: 2,            // int
+					position: "center",         // string :: options { top, bottom, center }
+					dark: false                 // bool
+				},
 
 				caption: {
 
@@ -77,17 +89,22 @@
 					fontBold: false,							// bool
 					fontItalic: false,							// bool
 					shadowSize: 0,                  			// int :: px
-					shadowColor: "#666",            			// string :: html, rgb or rgba color
+					shadowColor: "#666"             			// string :: html, rgb or rgba color
 
 				},
 
 				pager: {
 					dark: false,
 					transitionHidden: true,			// bool
-					float: "right",				// string :: options { left, right, center }
+					float: "right",				    // string :: options { left, right, center }
 					position: "bottom",				// string :: options { top, bottom }
-					background: "off",              // string :: options { white, dark, off }
+					background: "off"               // string :: options { white, dark, off }
 				},
+
+				timer: {
+					intervals: []
+				}
+
 
 			}, settings);
 
@@ -98,6 +115,7 @@
 
 		/**
 		 * Gets the orientations of the animations
+		 *
 		 * @param obj
 		 * @returns {{x: string, y: string}}
 		 */
@@ -112,6 +130,7 @@
 
 		/**
 		 * Updates time of effects
+		 *
 		 * @param str
 		 * @param time
 		 */
@@ -125,6 +144,7 @@
 
 		/**
 		 * Handles CSS of slider
+		 *
 		 * @param obj
 		 */
 		var sliderHandler = function(obj) {
@@ -157,12 +177,13 @@
 
 		/**
 		 * Handles the buttons effect
+		 *
 		 * @param obj
 		 * @param gone
 		 */
 		var hiddenButtonsWhileTransition = function(obj, gone) {
 
-			if (settings.buttonsHiddenEffect) {
+			if (settings.buttons.hiddenEffect) {
 				if (gone) {
 					obj.find('.buttons').fadeOut(150);
 				} else {
@@ -174,6 +195,7 @@
 
 		/**
 		 * Handles the pager effect
+		 *
 		 * @param obj
 		 * @param gone
 		 */
@@ -191,6 +213,7 @@
 
 		/**
 		 * Add the image number according to it order
+		 *
 		 * @param obj
 		 */
 		var addNumbersToImages = function(obj) {
@@ -202,6 +225,7 @@
 
 		/**
 		 * Returns a DOM image according to it order
+		 *
 		 * @param obj
 		 * @param number
 		 * @returns {*|{}}
@@ -213,25 +237,53 @@
 
 		/**
 		 * Adds buttons to slider
+		 *
 		 * @param obj
 		 */
 		var addButtons = function(obj) {
 
 			var html = '<div class="buttons">' +
-				'<a class="left" data-direction="left"><img src="//www.pausanchezv.com/plugins/sv-slider/img/left.png" /></a>' +
-				'<a class="right" data-direction="right"><img src="//www.pausanchezv.com/plugins/sv-slider/img/right.png" /></a>' +
+				'<a class="left" data-direction="left"><img src="//www.pausanchezv.com/plugins/sv-slider/img/' + settings.buttons.type + '-arrow-left.png?rgd" /></a>' +
+				'<a class="right" data-direction="right"><img src="//www.pausanchezv.com/plugins/sv-slider/img/' + settings.buttons.type + '-arrow-right.png?rgd" /></a>' +
 				'</div>';
 			$(html).insertAfter(obj.find("img:last-child")).fadeIn();
 
-			var height = obj.find("img:first-child").height();
-			obj.find(".buttons > a").css('bottom', height / 2 - BUTTONS_SIZE + "px");
-			obj.find(".buttons > a.left").css('left', settings.paddingSize + BUTTONS_SIZE + "px");
-			obj.find(".buttons > a.right").css('right', settings.paddingSize + BUTTONS_SIZE + "px");
+
+			var height = obj.find("img").height() / 2;
+			var buttonHeight = 30;
+
+			if (settings.buttons.type === 'big') {
+				obj.find(".buttons > a").css({
+					'padding': '22px 24px 18px 24px',
+					'background-color': settings.buttons.dark ? 'rgba(0, 5, 10 ,.8)' : 'rgba(255, 255, 255 ,.8)',
+					'border-radius': settings.buttons.borderRadius + 'px'
+				});
+				buttonHeight = 86;
+			}
+
+			obj.find(".buttons > a.left").css('left', settings.paddingSize + CAPTION_MARGIN + "px");
+			obj.find(".buttons > a.right").css('right', settings.paddingSize + CAPTION_MARGIN + "px");
+
+			switch (settings.buttons.position) {
+				case "center":
+					obj.find(".buttons > a").css('bottom', height - buttonHeight / 2 + settings.paddingSize + "px");
+					break;
+
+				case "top":
+					obj.find(".buttons > a").css('top', settings.paddingSize + CAPTION_MARGIN + "px");
+					break;
+
+				case "bottom":
+					obj.find(".buttons > a").css('bottom', settings.paddingSize + CAPTION_MARGIN + "px");
+					break;
+
+			}
 		};
 
 
 		/**
 		 * Adds captions to slider
+		 *
 		 * @param obj
 		 * @param currentImage
 		 */
@@ -275,6 +327,7 @@
 
 		/**
 		 * Change the captions of the images
+		 *
 		 * @param obj
 		 * @param number
 		 */
@@ -311,6 +364,7 @@
 
 		/**
 		 * Remove images captions
+		 *
 		 * @param obj
 		 * @param number
 		 * @param direction
@@ -368,6 +422,7 @@
 
 		/**
 		 * Adds a filter to the slider
+		 *
 		 * @param obj
 		 */
 		var addFilter = function(obj) {
@@ -390,6 +445,7 @@
 
 		/**
 		 * Gets the filter by key
+		 *
 		 * @param key
 		 * @returns {*}
 		 */
@@ -413,6 +469,7 @@
 
 		/**
 		 * Adds a pager to slider
+		 *
 		 * @param obj
 		 * @param numImages
 		 */
@@ -475,6 +532,7 @@
 
 		/**
 		 * Selects an item from the pager
+		 *
 		 * @param obj
 		 * @param number
 		 */
@@ -486,6 +544,7 @@
 
 		/**
 		 * Adds interval html bar
+		 *
 		 * @param obj
 		 */
 		var addInterval = function(obj) {
@@ -499,6 +558,7 @@
 
 		/**
 		 * Adds animation to interval bar
+		 *
 		 * @param obj
 		 */
 		var addIntervalAnimation = function(obj) {
@@ -510,18 +570,20 @@
 
 		/**
 		 * Starts the automatic play
+		 *
 		 * @param obj
 		 */
 		var startInterval = function(obj) {
 
 			if (settings.autoplay) {
-				intervals.push(setInterval(intervalHandler, settings.autoplayInterval, obj));
+				settings.timer.intervals.push(setInterval(intervalHandler, settings.autoplayInterval, obj));
 			}
 		};
 
 
 		/**
 		 * Assigns the event to the automatic play
+		 *
 		 * @param obj
 		 */
 		var intervalHandler = function(obj) {
@@ -534,6 +596,7 @@
 
 		/**
 		 * Stops the automatic reproduction
+		 *
 		 * @param obj
 		 */
 		var stopInterval = function(obj) {
@@ -543,24 +606,27 @@
 				obj.find('.interval-bar').hide();
 
 				// removes all previous intervals
-				intervals.forEach(clearInterval);
-				intervals = [];
+				settings.timer.intervals.forEach(clearInterval);
+				settings.timer.intervals = [];
 			}
 		};
 
 
 		/**
 		 * Tabs handler
+		 *
 		 * @param obj
 		 */
 		var tabHandler = function(obj) {
 
 			browser.focus(function() {
+				inPage = true;
 				startInterval(obj);
 				addIntervalAnimation(obj);
 			});
 
 			browser.blur(function() {
+				inPage = false;
 				stopInterval(obj);
 			});
 		};
@@ -568,6 +634,7 @@
 
 		/**
 		 * Actions before transition
+		 *
 		 * @param obj
 		 */
 		var addActionsBeforeTransition = function(obj) {
@@ -583,6 +650,7 @@
 
 		/**
 		 * Actions after transition
+		 *
 		 * @param obj
 		 */
 		var restartActionsAfterTransition = function(obj) {
@@ -649,7 +717,7 @@
 				var pagerItem = fromPager ? $(this) : null;
 
 				// checks if there is a transition or not
-				if (!inTransition) {
+				if (!inTransition && inPage) {
 
 					addActionsBeforeTransition(slider);
 
@@ -721,6 +789,7 @@
 
 		/**
 		 * Checks the customized types user's values
+		 *
 		 * @returns {boolean}
 		 */
 		function checkValues() {
@@ -737,7 +806,6 @@
 				if (typeof settings.borderRadius !== "number") throw "'borderRadius' must be an integer!";
 				if (typeof settings.paddingSize !== "number") throw "'paddingSize' must be an integer!";
 				if (typeof settings.paddingColor !== "string") throw "'paddingColor' must be a string!";
-				if (typeof settings.buttonsHiddenEffect !== "boolean") throw "'buttonsHiddenEffect' must be a boolean!";
 				if (typeof settings.boomerang !== "boolean") throw "'boomerang' must be a boolean!";
 				if (typeof settings.filter !== "string") throw "'filter' must be a string!";
 				if (typeof settings.showPager !== "boolean") throw "'showPager' must be a boolean!";
@@ -766,6 +834,13 @@
 				if (typeof settings.pager.position !== "string") throw "'pager.position' must be a string!";
 				if (typeof settings.pager.background !== "string") throw "'pager.background' must be a string!";
 
+				if (typeof settings.buttons.hiddenEffect !== "boolean") throw "'settings.button.hiddenEffect' must be a boolean!";
+				if (typeof settings.buttons.type !== "string") throw "'settings.button.type' must be a string!";
+				if (typeof settings.buttons.position !== "string") throw "'settings.button.position' must be a string!";
+				if (typeof settings.buttons.dark !== "boolean") throw "'settings.button.dark' must be a boolean!";
+				if (typeof settings.buttons.borderRadius !== "number") throw "'settings.button.borderRadius' must be an integer!";
+
+
 			} catch (error) {
 
 				alert ("SV-Slider Error:: " + error);
@@ -774,6 +849,7 @@
 
 			return true;
 		}
-	};
+
+	}
 
 } (jQuery));
