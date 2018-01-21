@@ -1,3 +1,3 @@
 # jQuery sv-slider
 
-jQuery slider for website
+ A [startVal](http://startval.com/) jQuery slider for website
