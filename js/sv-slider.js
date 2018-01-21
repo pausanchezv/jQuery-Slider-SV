@@ -72,7 +72,8 @@
 					hiddenEffect: true, // bool
 					borderRadius: 2, // int
 					position: "center", // string :: options { top, bottom, center }
-					dark: false // bool
+					dark: false, // bool
+					noMargin: false // bool
 				},
 
 				caption: {
@@ -109,7 +110,6 @@
 			}, settings);
 
 			return settings;
-
 		}
 
 
@@ -243,8 +243,8 @@
 		var addButtons = function(obj) {
 
 			var html = '<div class="buttons">' +
-				'<a class="left" data-direction="left"><img src="//www.pausanchezv.com/plugins/sv-slider/img/' + settings.buttons.type + '-arrow-left.png?rgd" /></a>' +
-				'<a class="right" data-direction="right"><img src="//www.pausanchezv.com/plugins/sv-slider/img/' + settings.buttons.type + '-arrow-right.png?rgd" /></a>' +
+				'<a class="left" data-direction="left"><img src="//www.startval.com/assets/img/' + settings.buttons.type + '-arrow-left.png?rgd" /></a>' +
+				'<a class="right" data-direction="right"><img src="//www.startval.com/assets/img/' + settings.buttons.type + '-arrow-right.png?rgd" /></a>' +
 				'</div>';
 			$(html).insertAfter(obj.find("img:last-child")).fadeIn();
 
@@ -261,8 +261,8 @@
 				buttonHeight = 86;
 			}
 
-			obj.find(".buttons > a.left").css('left', settings.paddingSize + CAPTION_MARGIN + "px");
-			obj.find(".buttons > a.right").css('right', settings.paddingSize + CAPTION_MARGIN + "px");
+			obj.find(".buttons > a.left").css('left', settings.paddingSize + (settings.buttons.noMargin ? 0 : CAPTION_MARGIN) + "px");
+			obj.find(".buttons > a.right").css('right', settings.paddingSize + (settings.buttons.noMargin ? 0 : CAPTION_MARGIN) + "px");
 
 			switch (settings.buttons.position) {
 				case "center":
@@ -270,11 +270,11 @@
 					break;
 
 				case "top":
-					obj.find(".buttons > a").css('top', settings.paddingSize + CAPTION_MARGIN + "px");
+					obj.find(".buttons > a").css('top', (settings.buttons.noMargin ? 0 : settings.paddingSize + CAPTION_MARGIN) + "px");
 					break;
 
 				case "bottom":
-					obj.find(".buttons > a").css('bottom', settings.paddingSize + CAPTION_MARGIN + "px");
+					obj.find(".buttons > a").css('bottom', (settings.buttons.noMargin ? 0 : settings.paddingSize + CAPTION_MARGIN) + "px");
 					break;
 
 			}
@@ -295,7 +295,7 @@
 			// updates the customized CSS
 			obj.find('.caption').css({
 				"background-color": settings.caption.backgroundColor,
-				"padding": "20px",
+				"padding": "14px 20px",
 				"color": settings.caption.fontColor,
 				"font-size": settings.caption.fontSize + "px",
 				"border-radius": settings.caption.borderRadius + "px",
@@ -317,7 +317,7 @@
 			}
 
 			if (settings.caption.shadowSize > 0) {
-				obj.find('.caption').css('box-shadow', "0px 1px " + settings.shadowSize + "px " + parseInt(settings.shadowSize / 5) + "px " + settings.shadowColor);
+				obj.find('.caption').css('box-shadow', "0px 1px " + settings.caption.shadowSize + "px " + parseInt(settings.caption.shadowSize / 5) + "px " + settings.caption.shadowColor);
 			}
 
 			// adds the first caption
@@ -553,6 +553,10 @@
 				$('<div class="interval-bar"></div>').insertAfter(obj.find('.pager'));
 				obj.find('.interval-bar').css('bottom', settings.paddingSize);
 			}
+
+            if (!settings.showPager) {
+                obj.find(".pager").detach();
+            }
 		};
 
 
