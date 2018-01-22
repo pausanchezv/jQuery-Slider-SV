@@ -241,10 +241,12 @@
 		 * @param obj
 		 */
 		var addButtons = function(obj) {
+			
+			if (obj.width() < 380) settings.buttons.type = 'small';
 
 			var html = '<div class="buttons">' +
-				'<a class="left" data-direction="left"><img src="//www.startval.com/assets/img/' + settings.buttons.type + '-arrow-left.png?rgd" /></a>' +
-				'<a class="right" data-direction="right"><img src="//www.startval.com/assets/img/' + settings.buttons.type + '-arrow-right.png?rgd" /></a>' +
+				'<a class="left" data-direction="left"><img src="//www.startval.com/assets/img/' + settings.buttons.type + '-arrow-left.png" alt="SV" /></a>' +
+				'<a class="right" data-direction="right"><img src="//www.startval.com/assets/img/' + settings.buttons.type + '-arrow-right.png" alt="SV" /></a>' +
 				'</div>';
 			$(html).insertAfter(obj.find("img:last-child")).fadeIn();
 
@@ -297,7 +299,7 @@
 				"background-color": settings.caption.backgroundColor,
 				"padding": "14px 20px",
 				"color": settings.caption.fontColor,
-				"font-size": settings.caption.fontSize + "px",
+				"font-size": (obj.width() > 380) ? settings.caption.fontSize : 15 + "px",
 				"border-radius": settings.caption.borderRadius + "px",
 				"font-weight": settings.caption.fontBold ? "bold" : "normal",
 				"font-style": settings.caption.fontItalic ? "italic" : "normal",
@@ -857,3 +859,4 @@
 	}
 
 } (jQuery));
+
