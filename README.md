@@ -1,4 +1,4 @@
-# [jQuery sv-slider](http://startval.com/)
+# [jQuery SV-Slider](http://startval.com/)
 
 ## Download the plugin on the [official website](http://startval.com/) and discover all the plugin's features in our user [API](http://startval.com/jquery-slider/api-and-options)!
 
